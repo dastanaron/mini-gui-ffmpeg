@@ -115,17 +115,29 @@ func main() {
 
 		srcPath := filesToOpen[0]
 
-		switch convertingType.GetActiveText() {
-		case "telegram":
-			ffmpeg.ConvertTelegram(srcPath, pathToSave)
-		case "default":
+		converter := ffmpeg.NewConverter(srcPath, pathToSave)
+
+		convertingTypeId := convertingType.GetActiveID()
+
+		switch convertingTypeId {
+		case "0":
+			converter.ConvertTelegram()
+		case "1":
+			converter.CutAudio()
+		default:
 			errorDialog.ShowAll()
 			errorDialog.SetMarkup("Don't selected convert type")
 			errorDialog.FormatSecondaryMarkup("%s", "You need to select convert type")
 			return
 		}
 
-		outTextBuffer.SetText("Done")
+		report := fmt.Sprintf("%s", converter.CmdOutput)
+
+		if report == "" {
+			report = "Done without errors"
+		}
+
+		outTextBuffer.SetText(report)
 
 	})
 

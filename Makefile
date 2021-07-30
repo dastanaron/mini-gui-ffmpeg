@@ -1,6 +1,6 @@
 .PHONY: all clean build
 
-APP_NAME=gui-feed-analyzer
+APP_NAME=gui-mini-ffmpeg
 
 all: prod
 
