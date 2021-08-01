@@ -1,4 +1,4 @@
-package controlgui
+package GUIController
 
 import (
 	"github.com/gotk3/gotk3/gtk"

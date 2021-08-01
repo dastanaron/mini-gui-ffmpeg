@@ -1,5 +1,12 @@
 GO GUI(GTK) MINI FFMPEG Video converter
 ==========================
 
-https://user-images.githubusercontent.com/25330618/127615281-a20a8de7-6fbb-42ec-8c51-9ab0b123ef05.mp4
+{{Demonstration}}
 
+
+Description
+--------------------------
+
+Mini GUI video converter using [FFMPEG](https://www.ffmpeg.org/). I made it for personal needs, but I'm ready to share it with you.
+
+If you can and want to help me with this programm, I am waiting your Pull-Request.
