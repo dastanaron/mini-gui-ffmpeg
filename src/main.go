@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	controlgui "gui-feed-analyzer/control-gui"
 	"gui-feed-analyzer/ffmpeg"
 	"gui-feed-analyzer/helpers"
 	"log"
@@ -21,95 +22,57 @@ func main() {
 
 	rootPath, err := os.Getwd()
 
-	if err != nil {
-		log.Fatal("Error:", err)
-	}
+	helpers.CheckError("Error", err)
 
 	err = gui.AddFromFile(path.Join(rootPath, "./main.glade"))
 	helpers.CheckError("Error", err)
 
-	obj, err := gui.GetObject("window_main")
+	controlgui, err := controlgui.NewGUIController(gui)
 	helpers.CheckError("Error", err)
 
-	win := obj.(*gtk.Window)
-	win.SetTitle("GUI MINI FFMPEG")
-	win.SetDefaultSize(500, 100)
-	win.Connect("destroy", func() {
+	controlgui.Common.MainWindow.SetTitle("GUI MINI FFMPEG")
+	controlgui.Common.MainWindow.SetDefaultSize(500, 100)
+	controlgui.Common.MainWindow.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
-	obj, _ = gui.GetObject("error_dialog")
-	helpers.CheckError("Error", err)
-
-	errorDialog := obj.(*gtk.MessageDialog)
-	errorDialog.SetTitle("Error")
-	errorDialog.SetDefaultSize(200, 100)
-
-	obj, _ = gui.GetObject("choose_file_open")
-	chooseFileOpen := obj.(*gtk.FileChooserButton)
-
-	obj, _ = gui.GetObject("choose_file_save")
-	chooseFileSave := obj.(*gtk.Button)
-	obj, _ = gui.GetObject("button_run")
-	buttonRun := obj.(*gtk.Button)
-
-	obj, _ = gui.GetObject("file_save_dialog")
-	fileSaveDialog := obj.(*gtk.FileChooserDialog)
-
-	obj, _ = gui.GetObject("save_dialog_save")
-	buttonSaveFile := obj.(*gtk.Button)
-
-	obj, _ = gui.GetObject("save_dialog_cancel")
-	buttonSaveFileCloseDialog := obj.(*gtk.Button)
-
-	obj, _ = gui.GetObject("save_file_format")
-	saveFileFormatCombox := obj.(*gtk.ComboBoxText)
-
-	obj, _ = gui.GetObject("select_type")
-	convertingType := obj.(*gtk.ComboBoxText)
-
-	obj, _ = gui.GetObject("output_text")
-	outputText := obj.(*gtk.TextView)
-
 	var pathToSave string
 
-	chooseFileSave.Connect("clicked", func() {
-		fileSaveDialog.Show()
+	controlgui.SaveDialog.OpenFileSaveButton.Connect("clicked", func() {
+		controlgui.SaveDialog.FileSaveDialog.Show()
 	})
 
-	buttonSaveFileCloseDialog.Connect("clicked", func() {
-		fileSaveDialog.Hide()
+	controlgui.SaveDialog.CancelButton.Connect("clicked", func() {
+		controlgui.SaveDialog.FileSaveDialog.Hide()
 	})
 
-	buttonSaveFile.Connect("clicked", func() {
-		fileName := fileSaveDialog.FileChooser.GetFilename()
-		format := saveFileFormatCombox.GetActiveText()
+	controlgui.SaveDialog.SaveButton.Connect("clicked", func() {
+		fileName := controlgui.SaveDialog.FileSaveDialog.FileChooser.GetFilename()
+		format := controlgui.SaveDialog.FileFormatBox.GetActiveText()
 
 		if format == "*" {
 			format = ""
 		}
 
 		pathToSave = fmt.Sprintf("%s%s", fileName, format)
-		fileSaveDialog.Hide()
+		controlgui.SaveDialog.FileSaveDialog.Hide()
 	})
 
-	obj, _ = gui.GetObject("error_dialog_close")
-	errorDialogCloseButton := obj.(*gtk.Button)
-	errorDialogCloseButton.Connect("clicked", func() {
-		errorDialog.Hide()
+	controlgui.ErrorDialog.CloseButton.Connect("clicked", func() {
+		controlgui.ErrorDialog.ErrorDialog.Hide()
 	})
 
-	buttonRun.Connect("clicked", func() {
-		filesToOpen, _ := chooseFileOpen.GetFilenames()
+	controlgui.Common.StartButton.Connect("clicked", func() {
+		filesToOpen, _ := controlgui.Common.OpenFileButton.GetFilenames()
 
-		outTextBuffer, err := outputText.GetBuffer()
+		outTextBuffer, err := controlgui.Common.ReportOutput.GetBuffer()
 		helpers.CheckError("Error receiving buffer", err)
 		outTextBuffer.SetText(" ")
 
 		if len(filesToOpen) == 0 {
-			errorDialog.ShowAll()
-			errorDialog.SetMarkup("Don't selected files")
-			errorDialog.FormatSecondaryMarkup("%s", "You need to select file to save and to open")
+			controlgui.ErrorDialog.ErrorDialog.ShowAll()
+			controlgui.ErrorDialog.ErrorDialog.SetMarkup("Don't selected files")
+			controlgui.ErrorDialog.ErrorDialog.FormatSecondaryMarkup("%s", "You need to select file to save and to open")
 			return
 		}
 
@@ -117,7 +80,7 @@ func main() {
 
 		converter := ffmpeg.NewConverter(srcPath, pathToSave)
 
-		convertingTypeId := convertingType.GetActiveID()
+		convertingTypeId := controlgui.Common.ConvertingTypeBox.GetActiveID()
 
 		switch convertingTypeId {
 		case "0":
@@ -125,9 +88,9 @@ func main() {
 		case "1":
 			converter.CutAudio()
 		default:
-			errorDialog.ShowAll()
-			errorDialog.SetMarkup("Don't selected convert type")
-			errorDialog.FormatSecondaryMarkup("%s", "You need to select convert type")
+			controlgui.ErrorDialog.ErrorDialog.ShowAll()
+			controlgui.ErrorDialog.ErrorDialog.SetMarkup("Don't selected convert type")
+			controlgui.ErrorDialog.ErrorDialog.FormatSecondaryMarkup("%s", "You need to select convert type")
 			return
 		}
 
@@ -141,7 +104,7 @@ func main() {
 
 	})
 
-	win.ShowAll()
+	controlgui.Common.MainWindow.ShowAll()
 
 	gtk.Main()
 }
