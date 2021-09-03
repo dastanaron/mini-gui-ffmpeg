@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	guiController "gui-feed-analyzer/gui-controller"
+	guiController "gui-mini-ffmpeg/gui-controller"
 	"log"
 )
 

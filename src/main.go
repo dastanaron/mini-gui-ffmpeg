@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"gui-feed-analyzer/ffmpeg"
-	guiController "gui-feed-analyzer/gui-controller"
-	"gui-feed-analyzer/helpers"
+	"gui-mini-ffmpeg/ffmpeg"
+	guiController "gui-mini-ffmpeg/gui-controller"
+	"gui-mini-ffmpeg/helpers"
 	"log"
 	"os"
 	"path"
@@ -27,9 +27,10 @@ func main() {
 		log.Fatal("Error:", err)
 	}
 
-	rootPath, err := os.Getwd()
-
+	executable, err := os.Executable()
 	helpers.CheckError("Error", err)
+
+	rootPath := path.Dir(executable)
 
 	err = gui.AddFromFile(path.Join(rootPath, "./main.glade"))
 	helpers.CheckError("Error", err)
@@ -39,6 +40,7 @@ func main() {
 
 	controllerGUI.Common.MainWindow.SetTitle("GUI MINI FFMPEG")
 	controllerGUI.Common.MainWindow.SetDefaultSize(500, 100)
+	controllerGUI.Common.MainWindow.SetIconFromFile(path.Join(rootPath, "./icon.png"))
 	controllerGUI.Common.MainWindow.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
@@ -98,7 +100,7 @@ func handleRunButton(controllerGUI *guiController.GUIInterface, convertingObject
 		outTextBuffer.SetText(" ")
 
 		if len(filesToOpen) == 0 {
-			helpers.CheckGUIError(controllerGUI, "Don't selected files", errors.New("You need to select file to save and to open"))
+			helpers.CheckGUIError(controllerGUI, "Don't selected files", errors.New("you need to select file to save and to open"))
 			return
 		}
 

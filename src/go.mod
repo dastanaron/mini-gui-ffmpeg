@@ -1,5 +1,5 @@
-module gui-feed-analyzer
+module gui-mini-ffmpeg
 
 go 1.16
 
-require github.com/gotk3/gotk3 v0.6.1 // indirect
+require github.com/gotk3/gotk3 v0.6.1 // direct

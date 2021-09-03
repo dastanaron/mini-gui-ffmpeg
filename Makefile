@@ -16,16 +16,15 @@ race:
 
 ## default build
 build:	
-	cd src; go build -o ../build/${APP_NAME} .
+	cd src; cp ./main.glade ../build/main.glade; go build -o ../build/${APP_NAME} .
 
 ## production build (strip the debugging information)
 compile:
-	cd src;	GOOS=linux GOARCH=amd64 go build -o ../build/${APP_NAME} .
-	cd src;	GOOS=windows GOARCH=amd64 go build -o ../build/${APP_NAME}.exe .
+	cd src; cp ./main.glade ../build/main.glade; GOOS=linux GOARCH=amd64 go build -o ../build/${APP_NAME} .
+##	cd src;	GOOS=windows GOARCH=amd64 go build -o ../build/${APP_NAME}.exe .
 
 ## clear cache and remove builds
 clean:
 	go clean
 	rm -f build/${APP_NAME}
-	rm -f build/${APP_NAME}_x64
-	rm -f build/${APP_NAME}_x64.exe
+	rm -f build/main.glade
