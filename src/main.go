@@ -53,9 +53,9 @@ func main() {
 		controllerGUI.ErrorDialog.ErrorDialog.Hide()
 	})
 
-	handleRunButton(controllerGUI, convertingObject)
-
 	controllerGUI.Common.MainWindow.ShowAll()
+
+	handleRunButton(controllerGUI, convertingObject)
 
 	gtk.Main()
 }
@@ -108,6 +108,19 @@ func handleRunButton(controllerGUI *guiController.GUIInterface, convertingObject
 
 		converter := ffmpeg.NewConverter(convertingObject.InputFile, convertingObject.OutputFile)
 
+		controllerGUI.Common.StartButton.SetSensitive(false)
+
+		go func() {
+			controllerGUI.Common.ProgressBar.SetFraction(0.00)
+			for progressPercent := range converter.ProgressChannel {
+				fraction := float64(progressPercent) / 100
+				fmt.Println(float64(fraction))
+				controllerGUI.Common.ProgressBar.SetFraction(fraction)
+			}
+			outTextBuffer.SetText("Done")
+			controllerGUI.Common.StartButton.SetSensitive(true)
+		}()
+
 		convertingObject.ConvertingType = controllerGUI.Common.ConvertingTypeBox.GetActiveID()
 
 		switch convertingObject.ConvertingType {
@@ -121,14 +134,5 @@ func handleRunButton(controllerGUI *guiController.GUIInterface, convertingObject
 			controllerGUI.ErrorDialog.ErrorDialog.FormatSecondaryMarkup("%s", "You need to select convert type")
 			return
 		}
-
-		report := fmt.Sprintf("%s", converter.CmdOutput)
-
-		if report == "" {
-			report = "Done without errors"
-		}
-
-		outTextBuffer.SetText(report)
-
 	})
 }

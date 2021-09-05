@@ -10,6 +10,7 @@ type GUICommonWindow struct {
 	StartButton       *gtk.Button
 	ConvertingTypeBox *gtk.ComboBoxText
 	ReportOutput      *gtk.TextView
+	ProgressBar       *gtk.ProgressBar
 }
 
 type GUIErrorDialog struct {
@@ -66,6 +67,12 @@ func NewGUIController(gtkBuilder *gtk.Builder) (*GUIInterface, error) {
 		return nil, err
 	}
 	commonWindow.ReportOutput = obj.(*gtk.TextView)
+
+	obj, err = gtkBuilder.GetObject("progress_bar")
+	if err != nil {
+		return nil, err
+	}
+	commonWindow.ProgressBar = obj.(*gtk.ProgressBar)
 
 	obj, err = gtkBuilder.GetObject("choose_file_save")
 	if err != nil {
