@@ -16,7 +16,7 @@ race:
 
 ## default build
 build:	
-	cd src; cp ./main.glade ../build/main.glade; go build -o ../build/${APP_NAME} .
+	cd src; go build -o ../build/${APP_NAME} .
 
 ## production build (strip the debugging information)
 compile:
@@ -27,4 +27,3 @@ compile:
 clean:
 	go clean
 	rm -f build/${APP_NAME}
-	rm -f build/main.glade
