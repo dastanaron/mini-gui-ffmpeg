@@ -1,17 +1,23 @@
 package main
 
 import (
+	_ "embed"
 	"errors"
 	"fmt"
 	"gui-mini-ffmpeg/ffmpeg"
 	guiController "gui-mini-ffmpeg/gui-controller"
 	"gui-mini-ffmpeg/helpers"
 	"log"
-	"os"
-	"path"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
+
+//go:embed main.glade
+var gladeInterface string
+
+//go:embed icon.png
+var icon []byte
 
 type ConvertingObject struct {
 	InputFile      string
@@ -22,17 +28,15 @@ type ConvertingObject struct {
 func main() {
 	gtk.Init(nil)
 
+	pixBuf, err := gdk.PixbufNewFromBytesOnly(icon)
+	helpers.CheckError("Error", err)
+
 	gui, err := gtk.BuilderNew()
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
 
-	executable, err := os.Executable()
-	helpers.CheckError("Error", err)
-
-	rootPath := path.Dir(executable)
-
-	err = gui.AddFromFile(path.Join(rootPath, "./main.glade"))
+	err = gui.AddFromString(gladeInterface)
 	helpers.CheckError("Error", err)
 
 	controllerGUI, err := guiController.NewGUIController(gui)
@@ -40,7 +44,7 @@ func main() {
 
 	controllerGUI.Common.MainWindow.SetTitle("GUI MINI FFMPEG")
 	controllerGUI.Common.MainWindow.SetDefaultSize(500, 100)
-	controllerGUI.Common.MainWindow.SetIconFromFile(path.Join(rootPath, "./icon.png"))
+	controllerGUI.Common.MainWindow.SetIcon(pixBuf)
 	controllerGUI.Common.MainWindow.Connect("destroy", func() {
 		gtk.MainQuit()
 	})

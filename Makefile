@@ -20,7 +20,7 @@ build:
 
 ## production build (strip the debugging information)
 compile:
-	cd src; cp ./main.glade ../build/main.glade; GOOS=linux GOARCH=amd64 go build -o ../build/${APP_NAME} .
+	cd src; GOOS=linux GOARCH=amd64 go build -o ../build/${APP_NAME} .
 ##	cd src;	GOOS=windows GOARCH=amd64 go build -o ../build/${APP_NAME}.exe .
 
 ## clear cache and remove builds
